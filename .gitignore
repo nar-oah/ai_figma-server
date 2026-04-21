@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.python-version
+.venv/
+venv/
+env/
+.DS_Store
+.AppleDouble
+.LSOverride
+tests/data/
+tests/output/
+generated/
+generated_frontend/
