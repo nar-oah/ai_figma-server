@@ -1,8 +1,9 @@
 from __future__ import annotations
-import json
+import os
 import re
 from typing import Any
-from urllib import error, parse, request
+from urllib import parse
+import httpx
 
 
 class FigmaErr(RuntimeError):
@@ -19,24 +20,32 @@ def get_key(url: str) -> str:
     raise ValueError("无法从链接中提取 Figma file key")
 
 
+def get_token() -> str:
+    token = os.environ.get("FIGMA_TOKEN", "").strip()
+    if token:
+        return token
+    raise ValueError("缺少环境变量 FIGMA_TOKEN")
+
+
 def get_json(url: str, token: str) -> dict[str, Any]:
-    req = request.Request(
-        url,
-        headers={
-            "X-Figma-Token": token,
-            "Accept": "application/json",
-        },
-    )
     try:
-        with request.urlopen(req, timeout=30) as res:
-            body = res.read().decode("utf-8")
-            return json.loads(body)
-    except error.HTTPError as exc:
-        body = exc.read().decode("utf-8", errors="ignore")
-        msg = body or exc.reason or "Figma API 请求失败"
-        raise FigmaErr(exc.code, msg) from exc
-    except error.URLError as exc:
-        raise FigmaErr(502, str(exc.reason) or "无法连接 Figma API") from exc
+        res = httpx.get(
+            url,
+            headers={
+                "X-Figma-Token": token,
+                "Accept": "application/json",
+            },
+            timeout=30.0,
+        )
+        res.raise_for_status()
+        return res.json()
+    except httpx.HTTPStatusError as exc:
+        msg = exc.response.text or exc.response.reason_phrase or "Figma API 请求失败"
+        raise FigmaErr(exc.response.status_code, msg) from exc
+    except httpx.RequestError as exc:
+        raise FigmaErr(502, str(exc) or "无法连接 Figma API") from exc
+    except ValueError as exc:
+        raise FigmaErr(502, "Figma API 返回了无效 JSON") from exc
 
 
 def get_file(key: str, token: str) -> dict[str, Any]:

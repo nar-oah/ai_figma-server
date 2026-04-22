@@ -2,9 +2,12 @@ from __future__ import annotations
 from pydantic import BaseModel, Field
 
 
+class HealthRes(BaseModel):
+    status: str
+
+
 class GenReq(BaseModel):
     url: str
-    token: str
     out_dir: str = "generated"
     use_vars: bool = True
 

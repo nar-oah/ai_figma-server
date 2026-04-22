@@ -1,10 +1,12 @@
 from __future__ import annotations
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 from app.doc import mod_doc
-from app.figma import get_key
+from app.figma import get_key, get_token
 from app.gen import add_front
 
 
@@ -16,6 +18,15 @@ class FlowTest(unittest.TestCase):
     def test_get_key(self) -> None:
         url = "https://www.figma.com/design/AbCdEf123456/Test?node-id=1-2"
         self.assertEqual(get_key(url), "AbCdEf123456")
+
+    def test_get_token(self) -> None:
+        with patch.dict(os.environ, {"FIGMA_TOKEN": " demo-token "}, clear=False):
+            self.assertEqual(get_token(), "demo-token")
+
+    def test_get_token_missing(self) -> None:
+        with patch.dict(os.environ, {}, clear=True):
+            with self.assertRaisesRegex(ValueError, "FIGMA_TOKEN"):
+                get_token()
 
     def test_mod_doc(self) -> None:
         doc = mod_doc(self.get_sample(), None)
