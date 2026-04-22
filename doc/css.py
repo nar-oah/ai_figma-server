@@ -1,8 +1,7 @@
-from __future__ import annotations
 from typing import Any
-from app.doc_name import get_px
-from app.doc_walk import get_raw, get_ref_flat
-from app.domain import TokDoc
+from doc.names import get_px
+from doc.walk import get_raw, get_ref_flat
+from domain import TokDoc
 
 
 def get_fill_css(node: dict[str, Any], tok: TokDoc) -> str | None:

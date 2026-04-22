@@ -1,6 +1,5 @@
-from __future__ import annotations
 import json
-from app.domain import GenDoc
+from domain import GenDoc
 
 
 def get_uno(doc: GenDoc) -> str:

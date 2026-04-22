@@ -1,8 +1,7 @@
-from __future__ import annotations
 from typing import Any
-from app.doc_css import get_val_css
-from app.doc_name import get_slug
-from app.doc_walk import get_raw
+from doc.css import get_val_css
+from doc.names import get_slug
+from doc.walk import get_raw
 
 
 def get_var_name(var_doc: dict[str, Any] | None, ref: str) -> str:
@@ -19,10 +18,14 @@ def get_var_css(var_doc: dict[str, Any] | None, ref: str, node: dict[str, Any], 
 
 
 def get_var_val(var_doc: dict[str, Any] | None, ref: str, seen: set[str]) -> Any | None:
+    def get_col_meta(ref: str) -> dict[str, Any] | None:
+        meta = (var_doc or {}).get("meta", {})
+        return meta.get("variableCollections", {}).get(ref)
+
     meta = get_var_meta(var_doc, ref)
     if not meta:
         return None
-    col = get_col_meta(var_doc, str(meta.get("variableCollectionId", "")))
+    col = get_col_meta(str(meta.get("variableCollectionId", "")))
     mode = col.get("defaultModeId") if col else None
     val = meta.get("valuesByMode", {}).get(mode) if mode else None
     if isinstance(val, dict) and str(val.get("type")) == "VARIABLE_ALIAS":
@@ -36,8 +39,3 @@ def get_var_val(var_doc: dict[str, Any] | None, ref: str, seen: set[str]) -> Any
 def get_var_meta(var_doc: dict[str, Any] | None, ref: str) -> dict[str, Any] | None:
     meta = (var_doc or {}).get("meta", {})
     return meta.get("variables", {}).get(ref)
-
-
-def get_col_meta(var_doc: dict[str, Any] | None, ref: str) -> dict[str, Any] | None:
-    meta = (var_doc or {}).get("meta", {})
-    return meta.get("variableCollections", {}).get(ref)

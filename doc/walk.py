@@ -1,4 +1,3 @@
-from __future__ import annotations
 from collections.abc import Iterable
 from typing import Any
 
@@ -44,13 +43,12 @@ def get_ref_flat(data: Any, prefix: str = "") -> dict[str, str]:
 
 
 def get_walk(node: dict[str, Any]) -> Iterable[dict[str, Any]]:
+    def get_child_walk(node: dict[str, Any]) -> Iterable[dict[str, Any]]:
+        yield node
+        for child in node.get("children", []):
+            if isinstance(child, dict):
+                yield from get_child_walk(child)
+
     if not isinstance(node, dict):
         return []
     return get_child_walk(node)
-
-
-def get_child_walk(node: dict[str, Any]) -> Iterable[dict[str, Any]]:
-    yield node
-    for child in node.get("children", []):
-        if isinstance(child, dict):
-            yield from get_child_walk(child)

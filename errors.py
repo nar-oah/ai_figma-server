@@ -1,7 +1,6 @@
-from __future__ import annotations
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from app.figma import FigmaErr
+from figma import FigmaErr
 
 
 def add_err(app: FastAPI) -> None:

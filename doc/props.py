@@ -1,8 +1,7 @@
-from __future__ import annotations
 from typing import Any
-from app.doc_name import get_pair_map, get_pascal, get_prop_key
-from app.doc_node import mod_node
-from app.domain import CompDoc, PropDoc, RefDoc, TokDoc, VariantDoc
+from doc.names import get_pair_map, get_pascal, get_prop_key
+from doc.node import mod_node
+from domain import CompDoc, PropDoc, RefDoc, TokDoc, VariantDoc
 
 
 def get_ref_map(
@@ -25,31 +24,43 @@ def get_comp_doc(
     ref_map: dict[str, RefDoc],
     prop_by_tag: dict[str, list[PropDoc]],
 ) -> CompDoc:
+    def get_variant(child: dict[str, Any]) -> VariantDoc:
+        when = {
+            key_map.get(get_prop_key(key), get_prop_key(key)): val
+            for key, val in get_pair_map(str(child.get("name", ""))).items()
+        }
+        return VariantDoc(
+            name=str(child.get("name", "")),
+            when=when,
+            root=mod_node(child, tok, ref_map, raw_map, None),
+        )
+
     tag = get_pascal(node.get("name", "Component"))
     props = prop_by_tag[tag]
     raw_map = {item.raw: item.name for item in props}
     key_map = {get_prop_key(item.raw): item.name for item in props if item.kind == "variant"}
-    variants = [
-        VariantDoc(
-            name=str(child.get("name", "")),
-            when={
-                key_map.get(get_prop_key(key), get_prop_key(key)): val
-                for key, val in get_pair_map(str(child.get("name", ""))).items()
-            },
-            root=mod_node(child, tok, ref_map, raw_map, None),
-        )
-        for child in node.get("children", [])
-        if isinstance(child, dict)
-    ]
+    variants = [get_variant(child) for child in node.get("children", []) if isinstance(child, dict)]
     return CompDoc(name=str(node.get("name", "Component")), tag=tag, props=props, variants=variants)
 
 
 def get_prop_list(node: dict[str, Any]) -> list[PropDoc]:
+    def get_prop_name(raw: str, kind: str) -> str:
+        base = get_prop_key(raw)
+        name = "text" if kind == "text" and base == "text" else base
+        if kind == "text" and name != "text":
+            name = f"{name}_text"
+        if name not in seen:
+            return name
+        idx = 2
+        while f"{name}_{idx}" in seen:
+            idx += 1
+        return f"{name}_{idx}"
+
     seen: set[str] = set()
     out: list[PropDoc] = []
     for raw, item in node.get("componentPropertyDefinitions", {}).items():
         kind = str(item.get("type", "TEXT")).lower()
-        name = get_prop_name(str(raw), kind, seen)
+        name = get_prop_name(str(raw), kind)
         seen.add(name)
         out.append(
             PropDoc(
@@ -61,16 +72,3 @@ def get_prop_list(node: dict[str, Any]) -> list[PropDoc]:
             )
         )
     return out
-
-
-def get_prop_name(raw: str, kind: str, seen: set[str]) -> str:
-    base = get_prop_key(raw)
-    name = "text" if kind == "text" and base == "text" else base
-    if kind == "text" and name != "text":
-        name = f"{name}_text"
-    if name not in seen:
-        return name
-    idx = 2
-    while f"{name}_{idx}" in seen:
-        idx += 1
-    return f"{name}_{idx}"

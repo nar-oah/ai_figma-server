@@ -1,4 +1,3 @@
-from __future__ import annotations
 from pydantic import BaseModel, Field
 
 
@@ -8,7 +7,7 @@ class HealthRes(BaseModel):
 
 class GenReq(BaseModel):
     url: str
-    out_dir: str = "generated"
+    out_dir: str = "output/runs"
     use_vars: bool = True
 
 

@@ -1,7 +1,6 @@
-from __future__ import annotations
 from fastapi import APIRouter
-from app.models import GenReq, GenRes, HealthRes
-from app.service import get_gen_res
+from models import GenReq, GenRes, HealthRes
+from service import get_gen_res
 
 router = APIRouter()
 

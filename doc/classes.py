@@ -1,9 +1,7 @@
-from __future__ import annotations
-from typing import Any
-from app.doc_class_layout import get_axis_cls, get_gap_cls, get_grow_cls, get_pad_cls, get_size_cls
-from app.doc_class_style import get_box_cls, get_rotate_cls, get_text_cls
-from app.doc_name import get_clean_cls
-from app.domain import TokDoc
+from doc.class_layout import get_axis_cls, get_gap_cls, get_grow_cls, get_pad_cls, get_size_cls
+from doc.class_style import get_box_cls, get_rotate_cls, get_text_cls
+from doc.names import get_clean_cls
+from domain import TokDoc
 
 
 def get_node_cls(node: dict[str, Any], tok: TokDoc, parent_mode: str | None) -> list[str]:
