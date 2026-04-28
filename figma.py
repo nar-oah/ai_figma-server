@@ -78,3 +78,60 @@ def get_vars(key: str, token: str) -> tuple[dict[str, Any] | None, str | None]:
         if exc.code in {401, 403, 404}:
             return None, f"variables/local 未返回可用数据，已退回样式与绑定值推断: {exc.msg}"
         raise
+
+
+def test_get_key() -> None:
+    url = "https://www.figma.com/design/AbCdEf123456/Test?node-id=1-2"
+    assert get_key(url) == "AbCdEf123456"
+
+
+def test_get_token(monkeypatch) -> None:
+    monkeypatch.setenv("FIGMA_TOKEN", " demo-token ")
+    assert get_token() == "demo-token"
+
+
+def test_get_token_missing(monkeypatch) -> None:
+    import pytest
+
+    monkeypatch.delenv("FIGMA_TOKEN", raising=False)
+    with pytest.raises(ValueError, match="FIGMA_TOKEN"):
+        get_token()
+
+
+def test_get_json(monkeypatch) -> None:
+    class FakeRes:
+        status_code = 200
+        text = '{"name": "Demo"}'
+        reason_phrase = "OK"
+
+        def raise_for_status(self) -> None:
+            return None
+
+        def json(self) -> dict[str, str]:
+            return {"name": "Demo"}
+
+    hit: dict[str, Any] = {}
+
+    def get_fake(url: str, headers: dict[str, str], timeout: float) -> FakeRes:
+        hit["url"] = url
+        hit["headers"] = headers
+        hit["timeout"] = timeout
+        return FakeRes()
+
+    monkeypatch.setattr(httpx, "get", get_fake)
+    data = get_json("https://api.figma.com/v1/files/demo", "demo-token")
+    assert data == {"name": "Demo"}
+    assert hit["url"] == "https://api.figma.com/v1/files/demo"
+    assert hit["headers"] == {"X-Figma-Token": "demo-token", "Accept": "application/json"}
+    assert hit["timeout"] == 30.0
+
+
+def test_get_vars_warn(monkeypatch) -> None:
+    def get_fake_json(_: str, __: str) -> dict[str, object]:
+        raise FigmaErr(403, "blocked")
+
+    monkeypatch.setattr("figma.get_json", get_fake_json)
+    data, warn = get_vars("demo-key", "demo-token")
+    assert data is None
+    assert warn is not None
+    assert "variables/local" in warn

@@ -31,3 +31,27 @@ def add_run() -> None:
 
 if __name__ == "__main__":
     add_run()
+
+
+def test_get_health() -> None:
+    from fastapi.testclient import TestClient
+
+    client = TestClient(app)
+    res = client.get("/healthz")
+    assert res.status_code == 200
+    assert res.json() == {"status": "ok"}
+
+
+def test_add_run(monkeypatch) -> None:
+    hit: dict[str, object] = {}
+
+    def add_fake_run(app: object, **kw: object) -> None:
+        hit["app"] = app
+        hit["kw"] = kw
+
+    monkeypatch.setenv("HOST", "127.0.0.1")
+    monkeypatch.setenv("PORT", "8123")
+    monkeypatch.setattr(uvicorn, "run", add_fake_run)
+    add_run()
+    assert hit["app"] is app
+    assert hit["kw"] == {"host": "127.0.0.1", "port": 8123}

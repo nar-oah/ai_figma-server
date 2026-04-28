@@ -96,14 +96,7 @@ output/
 │   └── write.py
 ├── output/
 │   └── samples/
-└── tests/
-    ├── doc/
-    │   └── test_build.py
-    ├── gen/
-    │   └── test_write.py
-    ├── test_figma.py
-    ├── test_main.py
-    └── test_service.py
+└── pytest.ini
 ```
 
 ## 模块测试
@@ -111,15 +104,15 @@ output/
 按节点排查时可以直接跑对应测试：
 
 ```bash
-./.venv/bin/pytest tests/test_main.py
-./.venv/bin/pytest tests/test_figma.py
-./.venv/bin/pytest tests/doc/test_build.py
-./.venv/bin/pytest tests/gen/test_write.py
-./.venv/bin/pytest tests/test_service.py
+./venv/bin/python -m pytest main.py
+./venv/bin/python -m pytest figma.py
+./venv/bin/python -m pytest doc/build.py
+./venv/bin/python -m pytest gen/write.py
+./venv/bin/python -m pytest service.py
 ```
 
 完整回归：
 
 ```bash
-./.venv/bin/pytest -q
+./venv/bin/python -m pytest -q
 ```
