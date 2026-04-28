@@ -105,7 +105,7 @@ def get_test_json(monkeypatch: Any) -> None:
         hit["url"] = url
         hit["headers"] = headers
         hit["timeout"] = timeout
-        return httpx.Response(200, json={"name": "Demo"})
+        return httpx.Response(200, json={"name": "Demo"}, request=httpx.Request("GET", url))
 
     monkeypatch.setattr(httpx, "get", get_fake)
     data = get_json("https://api.figma.com/v1/files/demo", "demo-token")
