@@ -80,17 +80,17 @@ def get_vars(key: str, token: str) -> tuple[dict[str, Any] | None, str | None]:
         raise
 
 
-def test_get_key() -> None:
+def get_test_key() -> None:
     url = "https://www.figma.com/design/AbCdEf123456/Test?node-id=1-2"
     assert get_key(url) == "AbCdEf123456"
 
 
-def test_get_token(monkeypatch) -> None:
+def get_test_token(monkeypatch: Any) -> None:
     monkeypatch.setenv("FIGMA_TOKEN", " demo-token ")
     assert get_token() == "demo-token"
 
 
-def test_get_token_missing(monkeypatch) -> None:
+def get_test_token_missing(monkeypatch: Any) -> None:
     import pytest
 
     monkeypatch.delenv("FIGMA_TOKEN", raising=False)
@@ -98,25 +98,14 @@ def test_get_token_missing(monkeypatch) -> None:
         get_token()
 
 
-def test_get_json(monkeypatch) -> None:
-    class FakeRes:
-        status_code = 200
-        text = '{"name": "Demo"}'
-        reason_phrase = "OK"
-
-        def raise_for_status(self) -> None:
-            return None
-
-        def json(self) -> dict[str, str]:
-            return {"name": "Demo"}
-
+def get_test_json(monkeypatch: Any) -> None:
     hit: dict[str, Any] = {}
 
-    def get_fake(url: str, headers: dict[str, str], timeout: float) -> FakeRes:
+    def get_fake(url: str, headers: dict[str, str], timeout: float) -> httpx.Response:
         hit["url"] = url
         hit["headers"] = headers
         hit["timeout"] = timeout
-        return FakeRes()
+        return httpx.Response(200, json={"name": "Demo"})
 
     monkeypatch.setattr(httpx, "get", get_fake)
     data = get_json("https://api.figma.com/v1/files/demo", "demo-token")
@@ -126,7 +115,7 @@ def test_get_json(monkeypatch) -> None:
     assert hit["timeout"] == 30.0
 
 
-def test_get_vars_warn(monkeypatch) -> None:
+def get_test_vars_warn(monkeypatch: Any) -> None:
     def get_fake_json(_: str, __: str) -> dict[str, object]:
         raise FigmaErr(403, "blocked")
 

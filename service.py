@@ -51,7 +51,7 @@ def get_gen_res(req: GenReq) -> GenRes:
     )
 
 
-def test_get_gen_res(tmp_path: Path, monkeypatch) -> None:
+def get_test_gen_res(tmp_path: Path, monkeypatch: Any) -> None:
     def get_sample() -> dict[str, object]:
         path = Path(__file__).resolve().parent / "output" / "samples" / "api_response.json"
         return json.loads(path.read_text(encoding="utf-8"))

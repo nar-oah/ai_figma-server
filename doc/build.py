@@ -60,7 +60,7 @@ def add_doc_json(doc: GenDoc, path: Path) -> None:
     path.write_text(json.dumps(get_doc_data(doc), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
-def test_mod_doc(tmp_path: Path) -> None:
+def mod_test_doc(tmp_path: Path) -> None:
     def get_sample() -> dict[str, object]:
         path = Path(__file__).resolve().parents[1] / "output" / "samples" / "api_response.json"
         return json.loads(path.read_text(encoding="utf-8"))

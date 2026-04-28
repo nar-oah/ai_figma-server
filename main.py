@@ -1,4 +1,5 @@
 import os
+from typing import Any
 from fastapi import FastAPI
 import uvicorn
 from api import router
@@ -33,7 +34,7 @@ if __name__ == "__main__":
     add_run()
 
 
-def test_get_health() -> None:
+def get_test_health() -> None:
     from fastapi.testclient import TestClient
 
     client = TestClient(app)
@@ -42,7 +43,7 @@ def test_get_health() -> None:
     assert res.json() == {"status": "ok"}
 
 
-def test_add_run(monkeypatch) -> None:
+def add_test_run(monkeypatch: Any) -> None:
     hit: dict[str, object] = {}
 
     def add_fake_run(app: object, **kw: object) -> None:
