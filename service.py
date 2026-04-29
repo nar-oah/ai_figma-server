@@ -1,19 +1,29 @@
 import json
 from pathlib import Path
 from typing import Any
+from pydantic import BaseModel, Field
 from doc import add_doc_json, mod_doc
 from domain import GenDoc
 from figma import get_file, get_key, get_token, get_vars
 from gen import add_site
-from models import GenReq, GenRes
 
 
-def get_gen_res(req: GenReq) -> GenRes:
+class GenRes(BaseModel):
+    file_key: str
+    file_name: str
+    out_dir: str
+    pages: list[str]
+    components: list[str]
+    files: list[str]
+    warnings: list[str] = Field(default_factory=list)
+
+
+def get_gen_res(url: str) -> GenRes:
     def get_raw_data() -> tuple[str, dict[str, Any], dict[str, Any] | None, str | None]:
-        key = get_key(req.url)
+        key = get_key(url)
         token = get_token()
         file_doc = get_file(key, token)
-        var_doc, warn = get_vars(key, token) if req.use_vars else (None, None)
+        var_doc, warn = get_vars(key, token)
         return key, file_doc, var_doc, warn
 
     def get_doc(key: str, file_doc: dict[str, Any], var_doc: dict[str, Any] | None, warn: str | None) -> GenDoc:
@@ -24,7 +34,7 @@ def get_gen_res(req: GenReq) -> GenRes:
         return doc
 
     def get_out_root(key: str) -> Path:
-        return Path(req.out_dir).expanduser().resolve() / key
+        return Path("output/runs").expanduser().resolve() / key
 
     def add_json(path: Path, data: dict[str, Any]) -> str:
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -59,10 +69,11 @@ def get_test_gen_res(tmp_path: Path, monkeypatch: Any) -> None:
     monkeypatch.setattr("service.get_token", lambda: "demo-token")
     monkeypatch.setattr("service.get_file", lambda _key, _token: get_sample())
     monkeypatch.setattr("service.get_vars", lambda _key, _token: ({"meta": {}}, "vars fallback"))
-    req = GenReq(url="https://www.figma.com/design/AbCdEf123456/Test?node-id=1-2", out_dir=str(tmp_path))
-    res = get_gen_res(req)
+    monkeypatch.chdir(tmp_path)
+    url = "https://www.figma.com/design/AbCdEf123456/Test?node-id=1-2"
+    res = get_gen_res(url)
     root = Path(res.out_dir)
-    assert root == tmp_path.resolve() / "AbCdEf123456"
+    assert root == tmp_path.resolve() / "output" / "runs" / "AbCdEf123456"
     assert (root / "raw" / "api_response.json").exists()
     assert (root / "raw" / "variables_response.json").exists()
     assert (root / "doc.json").exists()
