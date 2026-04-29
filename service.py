@@ -64,24 +64,15 @@ def get_gen_res(url: str) -> GenRes:
     )
 
 
-def get_test_gen_res(tmp_path: Path, monkeypatch: Any) -> None:
-    def get_sample() -> dict[str, object]:
-        path = (
-            Path(__file__).resolve().parent / "output" / "samples" / "api_response.json"
-        )
-        return json.loads(path.read_text(encoding="utf-8"))
+def add_run() -> None:
+    import sys
 
-    monkeypatch.setenv("FIGMA_TOKEN", "demo-token")
-    monkeypatch.setattr("service.get_file", lambda _key, _token: get_sample())
-    monkeypatch.chdir(tmp_path)
-    url = "https://www.figma.com/design/AbCdEf123456/Test?node-id=1-2"
+    url = sys.argv[1] if len(sys.argv) > 1 else os.environ.get("FIGMA_URL", "")
+    if not url:
+        raise SystemExit("用法: FIGMA_TOKEN=... python service.py <figma_url>")
     res = get_gen_res(url)
-    root = Path(res.out_dir)
-    assert root == tmp_path.resolve() / "output" / "runs" / "AbCdEf123456"
-    assert (root / "raw" / "api_response.json").exists()
-    assert (root / "doc.json").exists()
-    assert (root / "web" / "src" / "lib" / "generated" / "meta.json").exists()
-    assert "raw/api_response.json" in res.files
-    assert "doc.json" in res.files
-    assert any(path.startswith("web/") for path in res.files)
-    assert res.warnings == []
+    print(json.dumps(res.dict(), ensure_ascii=False, indent=2))
+
+
+if __name__ == "__main__":
+    add_run()

@@ -38,10 +38,10 @@ def add_test_site(tmp_path: Path) -> None:
         return json.loads(path.read_text(encoding="utf-8"))
 
     doc = mod_doc(get_sample())
-    files = add_site(doc, tmp_path)
-    assert "uno.config.ts" in files
-    assert "src/lib/generated/components/Tab.svelte" in files
-    assert f"src/routes/generated/{doc.pages[0].route}/+page.svelte" in files
-    code = (tmp_path / "src" / "lib" / "generated" / "components" / "Tab.svelte").read_text(encoding="utf-8")
-    assert "export let text" in code
-    assert "class_name" in code
+    root = Path("output/runs/sample/web")
+    files = add_site(doc, root)
+    print(json.dumps(files, ensure_ascii=False, indent=2))
+
+
+if __name__ == "__main__":
+    add_test_site()

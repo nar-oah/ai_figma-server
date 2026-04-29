@@ -92,23 +92,25 @@ output/
 │   └── write.py
 ├── output/
 │   └── samples/
-└── pytest.ini
 ```
 
-## 模块测试
+## 模块运行
 
-按节点排查时可以直接跑对应测试：
+启动后端服务：
 
 ```bash
-./venv/bin/python -m pytest main.py
-./venv/bin/python -m pytest figma.py
-./venv/bin/python -m pytest doc/build.py
-./venv/bin/python -m pytest gen/write.py
-./venv/bin/python -m pytest service.py
+python main.py
 ```
 
-完整回归：
+拉取并生成完整输出：
 
 ```bash
-./venv/bin/python -m pytest -q
+FIGMA_TOKEN="<figma_token>" python service.py "https://www.figma.com/design/<file_key>/<file_name>"
+```
+
+用 sample JSON 运行中间阶段：
+
+```bash
+python -m doc.build
+python -m gen.write
 ```

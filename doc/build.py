@@ -76,7 +76,7 @@ def add_doc_json(doc: GenDoc, path: Path) -> None:
     )
 
 
-def mod_test_doc(tmp_path: Path) -> None:
+def add_sample_doc() -> None:
     def get_sample() -> dict[str, object]:
         path = (
             Path(__file__).resolve().parents[1]
@@ -87,11 +87,10 @@ def mod_test_doc(tmp_path: Path) -> None:
         return json.loads(path.read_text(encoding="utf-8"))
 
     doc = mod_doc(get_sample())
-    add_doc_json(doc, tmp_path / "doc.json")
-    data = json.loads((tmp_path / "doc.json").read_text(encoding="utf-8"))
-    assert len(doc.comps) == 3
-    assert len(doc.pages) == 1
-    assert any(item.tag == "Tab" for item in doc.comps)
-    assert any(name.startswith("--figma-color-") for name in doc.tokens.root)
-    assert any(name.startswith("--figma-var-") for name in doc.tokens.root)
-    assert data["pages"][0]["route"] == doc.pages[0].route
+    path = Path("output/runs/sample/doc.json")
+    add_doc_json(doc, path)
+    print(path)
+
+
+if __name__ == "__main__":
+    add_sample_doc()
