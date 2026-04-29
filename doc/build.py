@@ -2,6 +2,10 @@ import json
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any
+if __name__ == "__main__" and __package__ is None:
+    import sys
+
+    sys.path.append(str(Path(__file__).resolve().parents[1]))
 from doc.names import get_pascal, get_route
 from doc.node import mod_node
 from doc.props import get_comp_doc, get_prop_list, get_ref_map

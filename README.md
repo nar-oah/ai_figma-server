@@ -111,6 +111,6 @@ FIGMA_TOKEN="<figma_token>" python service.py "https://www.figma.com/design/<fil
 用 sample JSON 运行中间阶段：
 
 ```bash
-python -m doc.build
-python -m gen.write
+python doc/build.py
+python gen/write.py
 ```
