@@ -6,7 +6,7 @@ from doc.walk import get_ref_flat, get_walk
 from domain import TokDoc
 
 
-def get_tok(file_doc: dict[str, Any], var_doc: dict[str, Any] | None) -> TokDoc:
+def get_tok(file_doc: dict[str, Any]) -> TokDoc:
     def get_tok_name(ref: str, prefix: str) -> str:
         raw = style_meta.get(ref, {}).get("name") or f"{prefix}-{ref}"
         return get_slug(str(raw))
@@ -52,10 +52,10 @@ def get_tok(file_doc: dict[str, Any], var_doc: dict[str, Any] | None) -> TokDoc:
         for path, ref in get_ref_flat(node.get("boundVariables", {})).items():
             if ref in tok.var:
                 continue
-            css = get_var_css(var_doc, ref, node, path)
+            css = get_var_css(node, path)
             if not css:
                 continue
-            tok.var[ref] = get_var_name(var_doc, ref)
+            tok.var[ref] = get_var_name(ref)
             tok.root[tok.var[ref]] = css
 
     tok = TokDoc()

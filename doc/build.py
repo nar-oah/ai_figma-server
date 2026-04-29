@@ -10,12 +10,19 @@ from doc.walk import get_walk
 from domain import GenDoc, PageDoc, RefDoc, TokDoc
 
 
-def mod_doc(file_doc: dict[str, Any], var_doc: dict[str, Any] | None) -> GenDoc:
+def mod_doc(file_doc: dict[str, Any]) -> GenDoc:
     def get_comp_node_list() -> list[dict[str, Any]]:
-        return [node for node in get_walk(file_doc.get("document", {})) if node.get("type") == "COMPONENT_SET"]
+        return [
+            node
+            for node in get_walk(file_doc.get("document", {}))
+            if node.get("type") == "COMPONENT_SET"
+        ]
 
     def get_prop_by_tag(comp_nodes: list[dict[str, Any]]) -> dict[str, list]:
-        return {get_pascal(node.get("name", "Component")): get_prop_list(node) for node in comp_nodes}
+        return {
+            get_pascal(node.get("name", "Component")): get_prop_list(node)
+            for node in comp_nodes
+        }
 
     def get_page_list(tok: TokDoc, ref_map: dict[str, RefDoc]) -> list[PageDoc]:
         used: set[str] = set()
@@ -23,12 +30,18 @@ def mod_doc(file_doc: dict[str, Any], var_doc: dict[str, Any] | None) -> GenDoc:
         for canvas in file_doc.get("document", {}).get("children", []):
             if not isinstance(canvas, dict) or canvas.get("type") != "CANVAS":
                 continue
-            if any(child.get("type") == "COMPONENT_SET" for child in canvas.get("children", []) if isinstance(child, dict)):
+            if any(
+                child.get("type") == "COMPONENT_SET"
+                for child in canvas.get("children", [])
+                if isinstance(child, dict)
+            ):
                 continue
             for child in canvas.get("children", []):
                 if not isinstance(child, dict):
                     continue
-                route = get_route(str(child.get("name", "page")), str(child.get("id", "")), used)
+                route = get_route(
+                    str(child.get("name", "page")), str(child.get("id", "")), used
+                )
                 out.append(
                     PageDoc(
                         name=str(child.get("name", "Page")),
@@ -38,7 +51,7 @@ def mod_doc(file_doc: dict[str, Any], var_doc: dict[str, Any] | None) -> GenDoc:
                 )
         return out
 
-    tok = get_tok(file_doc, var_doc)
+    tok = get_tok(file_doc)
     comp_nodes = get_comp_node_list()
     prop_by_tag = get_prop_by_tag(comp_nodes)
     ref_map = get_ref_map(comp_nodes, prop_by_tag)
@@ -57,15 +70,23 @@ def get_doc_data(doc: GenDoc) -> dict[str, object]:
 
 def add_doc_json(doc: GenDoc, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(get_doc_data(doc), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(get_doc_data(doc), ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
 
 
 def mod_test_doc(tmp_path: Path) -> None:
     def get_sample() -> dict[str, object]:
-        path = Path(__file__).resolve().parents[1] / "output" / "samples" / "api_response.json"
+        path = (
+            Path(__file__).resolve().parents[1]
+            / "output"
+            / "samples"
+            / "api_response.json"
+        )
         return json.loads(path.read_text(encoding="utf-8"))
 
-    doc = mod_doc(get_sample(), None)
+    doc = mod_doc(get_sample())
     add_doc_json(doc, tmp_path / "doc.json")
     data = json.loads((tmp_path / "doc.json").read_text(encoding="utf-8"))
     assert len(doc.comps) == 3

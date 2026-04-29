@@ -1,6 +1,6 @@
 # figma-to-svelte
 
-FastAPI 服务。输入 Figma 链接，读取环境变量 `FIGMA_TOKEN`，拉取文件数据和可选变量数据，先清洗成内部文档，再生成 Svelte + UnoCSS 代码，并把各阶段产物统一写进 `output/`。
+FastAPI 服务。输入 Figma 链接，读取环境变量 `FIGMA_TOKEN`，拉取文件数据，先清洗成内部文档，再生成 Svelte + UnoCSS 代码，并把各阶段产物统一写进 `output/`。
 
 ## 运行
 
@@ -55,8 +55,7 @@ output/
 └── runs/
     └── <file_key>/
         ├── raw/
-        │   ├── api_response.json
-        │   └── variables_response.json
+        │   └── api_response.json
         ├── doc.json
         └── web/
             ├── uno.config.ts
