@@ -38,9 +38,7 @@ uvicorn main:app --reload
 
 ```json
 {
-  "url": "https://www.figma.com/design/<file_key>/<file_name>",
-  "out_dir": "output/runs",
-  "use_vars": true
+  "url": "https://www.figma.com/design/<file_key>/<file_name>"
 }
 ```
 
@@ -74,7 +72,6 @@ output/
 ├── errors.py
 ├── figma.py
 ├── main.py
-├── models.py
 ├── service.py
 ├── doc/
 │   ├── build.py
