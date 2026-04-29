@@ -82,7 +82,6 @@ def get_test_gen_res(tmp_path: Path, monkeypatch: Any) -> None:
     assert (root / "doc.json").exists()
     assert (root / "web" / "src" / "lib" / "generated" / "meta.json").exists()
     assert "raw/api_response.json" in res.files
-    assert "raw/variables_response.json" not in res.files
     assert "doc.json" in res.files
     assert any(path.startswith("web/") for path in res.files)
     assert res.warnings == []

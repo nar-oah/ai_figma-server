@@ -37,7 +37,7 @@ def add_test_site(tmp_path: Path) -> None:
         path = Path(__file__).resolve().parents[1] / "output" / "samples" / "api_response.json"
         return json.loads(path.read_text(encoding="utf-8"))
 
-    doc = mod_doc(get_sample(), None)
+    doc = mod_doc(get_sample())
     files = add_site(doc, tmp_path)
     assert "uno.config.ts" in files
     assert "src/lib/generated/components/Tab.svelte" in files
