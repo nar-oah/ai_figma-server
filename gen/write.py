@@ -29,7 +29,7 @@ def get_file_map(doc: GenDoc) -> dict[str, str]:
     return files
 
 
-def add_test_site(tmp_path: Path) -> None:
+def add_sample_site() -> None:
     import json
     from doc import mod_doc
 
@@ -44,4 +44,4 @@ def add_test_site(tmp_path: Path) -> None:
 
 
 if __name__ == "__main__":
-    add_test_site()
+    add_sample_site()
