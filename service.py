@@ -4,10 +4,10 @@ import re
 from pathlib import Path
 from typing import Any
 from pydantic import BaseModel, Field
-from doc import add_doc_json, mod_doc
+from doc.build import add_doc_json, mod_doc
 from domain import GenDoc
 from figma import get_file
-from gen import add_site
+from gen.write import add_site
 
 
 class GenRes(BaseModel):
