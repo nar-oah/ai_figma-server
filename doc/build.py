@@ -2,10 +2,6 @@ import json
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any
-if __name__ == "__main__" and __package__ is None:
-    import sys
-
-    sys.path.append(str(Path(__file__).resolve().parents[1]))
 from doc.names import get_pascal, get_route
 from doc.node import mod_node
 from doc.props import get_comp_doc, get_prop_list, get_ref_map
@@ -80,21 +76,13 @@ def add_doc_json(doc: GenDoc, path: Path) -> None:
     )
 
 
-def add_sample_doc() -> None:
+if __name__ == "__main__":
+
     def get_sample() -> dict[str, object]:
-        path = (
-            Path(__file__).resolve().parents[1]
-            / "output"
-            / "samples"
-            / "api_response.json"
-        )
+        path = Path(__file__).resolve().parents[1] / "output" / "api_response.json"
         return json.loads(path.read_text(encoding="utf-8"))
 
     doc = mod_doc(get_sample())
     path = Path("output/runs/sample/doc.json")
     add_doc_json(doc, path)
     print(path)
-
-
-if __name__ == "__main__":
-    add_sample_doc()

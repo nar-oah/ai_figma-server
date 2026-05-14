@@ -21,7 +21,11 @@ def get_raw(node: dict[str, Any], path: str) -> Any:
 
 
 def get_box(node: dict[str, Any]) -> dict[str, Any]:
-    return node.get("absoluteBoundingBox", {}) or node.get("absoluteRenderBounds", {}) or {}
+    return (
+        node.get("absoluteBoundingBox", {})
+        or node.get("absoluteRenderBounds", {})
+        or {}
+    )
 
 
 def get_ref_flat(data: Any, prefix: str = "") -> dict[str, str]:
@@ -49,6 +53,4 @@ def get_walk(node: dict[str, Any]) -> Iterable[dict[str, Any]]:
             if isinstance(child, dict):
                 yield from get_child_walk(child)
 
-    if not isinstance(node, dict):
-        return []
     return get_child_walk(node)

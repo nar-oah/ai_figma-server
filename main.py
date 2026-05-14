@@ -1,12 +1,12 @@
 from fastapi import Body, FastAPI
-from service import get_gen_res
+from service import get_svelte
 
 app = FastAPI(title="Figme to Svelte")
 
 
 @app.post("/api/generate", response_model=str)
 def add_gen(url: str = Body(..., embed=True)) -> str:
-    return get_gen_res(url)
+    return get_svelte(url)
 
 
 if __name__ == "__main__":
