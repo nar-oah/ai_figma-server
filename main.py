@@ -1,11 +1,11 @@
 from fastapi import Body, FastAPI
-from service import GenRes, get_gen_res
+from service import get_gen_res
 
 app = FastAPI(title="Figme to Svelte")
 
 
-@app.post("/api/generate", response_model=GenRes)
-def add_gen(url: str = Body(..., embed=True)) -> GenRes:
+@app.post("/api/generate", response_model=str)
+def add_gen(url: str = Body(..., embed=True)) -> str:
     return get_gen_res(url)
 
 

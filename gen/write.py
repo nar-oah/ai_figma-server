@@ -1,8 +1,4 @@
 from pathlib import Path
-if __name__ == "__main__" and __package__ is None:
-    import sys
-
-    sys.path.append(str(Path(__file__).resolve().parents[1]))
 from domain import GenDoc
 from gen.static import get_css, get_layout, get_meta, get_uno
 from gen.svelte import get_comp_file, get_page_file
@@ -33,19 +29,20 @@ def get_file_map(doc: GenDoc) -> dict[str, str]:
     return files
 
 
-def add_sample_site() -> None:
+if __name__ == "__main__":
     import json
     from doc.build import mod_doc
 
     def get_sample() -> dict[str, object]:
-        path = Path(__file__).resolve().parents[1] / "output" / "samples" / "api_response.json"
+        path = (
+            Path(__file__).resolve().parents[1]
+            / "output"
+            / "samples"
+            / "api_response.json"
+        )
         return json.loads(path.read_text(encoding="utf-8"))
 
     doc = mod_doc(get_sample())
     root = Path("output/runs/sample/web")
     files = add_site(doc, root)
     print(json.dumps(files, ensure_ascii=False, indent=2))
-
-
-if __name__ == "__main__":
-    add_sample_site()
