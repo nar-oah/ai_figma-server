@@ -1,4 +1,5 @@
 from typing import Any
+from doc.meta import get_comp_note
 from doc.names import get_pair_map, get_pascal, get_prop_key
 from doc.node import mod_node
 from domain import CompDoc, PropDoc, RefDoc, TokDoc, VariantDoc
@@ -19,6 +20,7 @@ def get_ref_map(
 
 
 def get_comp_doc(
+    file_doc: dict[str, Any],
     node: dict[str, Any],
     tok: TokDoc,
     ref_map: dict[str, RefDoc],
@@ -40,7 +42,15 @@ def get_comp_doc(
     raw_map = {item.raw: item.name for item in props}
     key_map = {get_prop_key(item.raw): item.name for item in props if item.kind == "variant"}
     variants = [get_variant(child) for child in node.get("children", []) if isinstance(child, dict)]
-    return CompDoc(name=str(node.get("name", "Component")), tag=tag, props=props, variants=variants)
+    desc, meta = get_comp_note(file_doc, node)
+    return CompDoc(
+        name=str(node.get("name", "Component")),
+        tag=tag,
+        props=props,
+        variants=variants,
+        description=desc,
+        meta=meta,
+    )
 
 
 def get_prop_list(node: dict[str, Any]) -> list[PropDoc]:
