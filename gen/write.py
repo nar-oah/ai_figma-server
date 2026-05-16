@@ -1,4 +1,9 @@
 from pathlib import Path
+import sys
+
+if __name__ == "__main__" and __package__ is None:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 from domain import GenDoc
 from gen.static import get_css, get_layout, get_meta, get_uno
 from gen.svelte import get_comp_file, get_page_file
