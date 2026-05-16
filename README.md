@@ -1,6 +1,6 @@
-# figma-to-svelte
+# figma-doc
 
-FastAPI 服务。输入 Figma 链接和导出的 token JSON，读取环境变量 `FIGMA_TOKEN` 拉取文件数据，并清洗成内部 `GenDoc` 数据。项目只负责清洗数据，不再生成 Svelte 代码。
+FastAPI 服务。输入 Figma 链接和导出的 token JSON，读取环境变量 `FIGMA_TOKEN` 拉取文件数据，并清洗成内部 `GenDoc` 数据。
 
 ## 运行
 
@@ -22,7 +22,7 @@ uvicorn main:app --reload
 
 ## 接口
 
-### `POST /api/generate`
+### `POST /api/doc`
 
 请求体：
 
@@ -100,4 +100,4 @@ python doc/build.py
 
 ## 语义约定
 
-Figma API 能稳定给出布局、层级、样式、变量绑定、组件 props 和实例选项，但不能可靠推断业务语义。比如 `reverse` 是否只是反转颜色、某个 frame 应该是 `button` 还是 `input`，都不在当前清洗层强行生成代码。
+Figma API 能稳定给出布局、层级、样式、变量绑定、组件 props 和实例选项，但不能可靠推断业务语义。比如 `reverse` 是否只是反转颜色、某个 frame 应该是 `button` 还是 `input`，都不在当前清洗层处理。
