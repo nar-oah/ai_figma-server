@@ -1,15 +1,23 @@
 from typing import Any
 from doc.css import get_node_paint
 from doc.names import get_font_css, get_px, get_slug
+from doc.token_file import get_file_vars
 from doc.vars import get_var_css, get_var_name
 from doc.walk import get_ref_flat, get_walk
-from domain import TokDoc
+from domain import TokDoc, TokenValueDoc
 
 
-def get_tok(file_doc: dict[str, Any]) -> TokDoc:
+def get_tok(file_doc: dict[str, Any], token_doc: dict[str, Any] | None = None) -> TokDoc:
     def get_tok_name(ref: str, prefix: str) -> str:
         raw = style_meta.get(ref, {}).get("name") or f"{prefix}-{ref}"
         return get_slug(str(raw))
+
+    def add_file_var_tok() -> None:
+        for item in get_file_vars(token_doc):
+            tok.variables.append(item)
+            tok.root[item.css_name] = item.css_value
+            if item.ref:
+                tok.var[item.ref] = item.css_name
 
     def add_text_tok(node: dict[str, Any]) -> None:
         text_id = node.get("styles", {}).get("text")
@@ -34,6 +42,22 @@ def get_tok(file_doc: dict[str, Any]) -> TokDoc:
             ]
         )
         tok.text[str(text_id)] = cls
+        tok.fonts.append(
+            TokenValueDoc(
+                name=name,
+                kind="text",
+                css_name=cls,
+                css_value=tok.classes[cls],
+                value={
+                    "fontFamily": style.get("fontFamily", "sans-serif"),
+                    "fontSize": style.get("fontSize", 16),
+                    "lineHeightPx": style.get("lineHeightPx", style.get("fontSize", 16)),
+                    "letterSpacing": style.get("letterSpacing", 0),
+                    "fontWeight": style.get("fontWeight", 400),
+                },
+                ref=str(text_id),
+            )
+        )
 
     def add_paint_tok(node: dict[str, Any]) -> None:
         styles = node.get("styles", {})
@@ -47,6 +71,16 @@ def get_tok(file_doc: dict[str, Any]) -> TokDoc:
                 continue
             tok.paint[str(ref)] = f"--figma-color-{name}"
             tok.root[tok.paint[str(ref)]] = css
+            tok.colors.append(
+                TokenValueDoc(
+                    name=name,
+                    kind="color",
+                    css_name=tok.paint[str(ref)],
+                    css_value=css,
+                    value=css,
+                    ref=str(ref),
+                )
+            )
 
     def add_var_tok(node: dict[str, Any]) -> None:
         for path, ref in get_ref_flat(node.get("boundVariables", {})).items():
@@ -57,9 +91,20 @@ def get_tok(file_doc: dict[str, Any]) -> TokDoc:
                 continue
             tok.var[ref] = get_var_name(ref)
             tok.root[tok.var[ref]] = css
+            tok.variables.append(
+                TokenValueDoc(
+                    name=get_slug(ref.replace(":", "-")),
+                    kind="api",
+                    css_name=tok.var[ref],
+                    css_value=css,
+                    value=css,
+                    ref=ref,
+                )
+            )
 
     tok = TokDoc()
     style_meta = file_doc.get("styles", {})
+    add_file_var_tok()
     for node in get_walk(file_doc.get("document", {})):
         add_text_tok(node)
         add_paint_tok(node)
