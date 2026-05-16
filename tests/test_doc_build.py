@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 from doc.build import add_doc_json, mod_doc
+from doc.meta import get_code_meta
 
 ROOT = Path(__file__).resolve().parents[1]
 API_SAMPLE = ROOT / "output" / "samples" / "api_response.json"
@@ -39,3 +40,9 @@ def test_component_props_and_notes_are_preserved() -> None:
     assert "reverse决定颜色" in comps["Tab"].description
     assert {prop.name for prop in comps["Input"].props} == {"input_text", "default_text", "click", "input"}
     assert "input输入框" in comps["Input"].description
+
+
+def test_component_description_can_carry_code_meta() -> None:
+    meta = get_code_meta('@code {"tag":"button","emits":["is_click"]}')
+
+    assert meta == {"tag": "button", "emits": ["is_click"]}
