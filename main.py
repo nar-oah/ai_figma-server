@@ -1,11 +1,12 @@
 from typing import Any
 from fastapi import FastAPI
+from pathlib import Path
 from pydantic import BaseModel, Field
 from doc.build import get_doc_data
 from gen.write import add_site
 from service import Service
 
-app = FastAPI(title="Figme to Svelte")
+app = FastAPI(title="Figma to Svelte")
 
 
 class GenerateRequest(BaseModel):
@@ -28,7 +29,6 @@ def add_gen(req: GenerateRequest) -> dict[str, Any]:
 
 
 if __name__ == "__main__":
-    from pathlib import Path
     import uvicorn
 
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=False)
