@@ -1,7 +1,12 @@
 import json
+import sys
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any
+
+if __name__ == "__main__" and __package__ is None:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 from doc.components import get_comp_node_list, get_prop_by_tag
 from doc.pages import get_page_list
 from doc.props import get_comp_doc, get_ref_map
