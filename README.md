@@ -114,7 +114,7 @@ output/
 python main.py
 ```
 
-拉取并生成完整输出：
+仅拉取并保存原始 API 响应：
 
 ```bash
 FIGMA_TOKEN="<figma_token>" python service.py "https://www.figma.com/design/<file_key>/<file_name>"
