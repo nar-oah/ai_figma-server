@@ -31,11 +31,14 @@ def get_file_map(doc: GenDoc) -> dict[str, str]:
 
 if __name__ == "__main__":
     import json
+    from doc.build import mod_doc
 
-    def get_sample() -> GenDoc:
-        path = Path(__file__).resolve().parents[1] / "output" / "samples" / "doc.json"
+    def get_json(path: Path) -> dict[str, object]:
         return json.loads(path.read_text(encoding="utf-8"))
 
-    root = Path("output/runs/sample/web")
-    files = add_site(get_sample(), root)
+    root_dir = Path(__file__).resolve().parents[1]
+    api_path = root_dir / "output" / "samples" / "api_response.json"
+    token_path = root_dir / "Mode 1.tokens.json"
+    doc = mod_doc(get_json(api_path), get_json(token_path))
+    files = add_site(doc, Path("output"))
     print(json.dumps(files, ensure_ascii=False, indent=2))
