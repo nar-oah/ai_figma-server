@@ -9,11 +9,6 @@ env/
 .DS_Store
 .AppleDouble
 .LSOverride
-tests/data/
-tests/output/
 generated/
 generated_frontend/
 output/*.json
-output/src/
-output/uno.config.ts
-output/runs/
