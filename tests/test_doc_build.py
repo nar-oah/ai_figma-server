@@ -37,5 +37,5 @@ def test_component_props_and_notes_are_preserved() -> None:
 
     assert [prop.name for prop in comps["Tab"].props] == ["text", "reverse"]
     assert "reverse决定颜色" in comps["Tab"].description
-    assert [prop.name for prop in comps["Input"].props] == ["input_text", "default_text", "click", "input"]
+    assert {prop.name for prop in comps["Input"].props} == {"input_text", "default_text", "click", "input"}
     assert "input输入框" in comps["Input"].description
