@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from doc.build import get_doc_data
 from service import Service
 
-app = FastAPI(title="Figma to Svelte")
+app = FastAPI(title="Figma Doc")
 
 
 class GenerateRequest(BaseModel):
@@ -12,8 +12,8 @@ class GenerateRequest(BaseModel):
     tokens: dict[str, Any] | None = None
 
 
-@app.post("/api/generate", response_model=dict[str, Any])
-def add_gen(req: GenerateRequest) -> dict[str, Any]:
+@app.post("/api/doc", response_model=dict[str, Any])
+def get_doc(req: GenerateRequest) -> dict[str, Any]:
     doc = Service(req.url, req.tokens).handle_doc()
     return {
         "name": doc.name,
