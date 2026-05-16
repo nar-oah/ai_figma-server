@@ -1,4 +1,15 @@
 from dataclasses import dataclass, field
+from typing import Any
+
+
+@dataclass(slots=True)
+class TokenValueDoc:
+    name: str
+    kind: str
+    css_name: str
+    css_value: str
+    value: Any
+    ref: str | None = None
 
 
 @dataclass(slots=True)
@@ -8,6 +19,9 @@ class TokDoc:
     paint: dict[str, str] = field(default_factory=dict)
     text: dict[str, str] = field(default_factory=dict)
     var: dict[str, str] = field(default_factory=dict)
+    colors: list[TokenValueDoc] = field(default_factory=list)
+    fonts: list[TokenValueDoc] = field(default_factory=list)
+    variables: list[TokenValueDoc] = field(default_factory=list)
 
 
 @dataclass(slots=True)
@@ -46,6 +60,8 @@ class CompDoc:
     tag: str
     props: list[PropDoc]
     variants: list[VariantDoc]
+    description: str = ""
+    meta: dict[str, object] = field(default_factory=dict)
 
 
 @dataclass(slots=True)
