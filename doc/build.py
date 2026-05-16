@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any
 from doc.components import get_comp_node_list, get_prop_by_tag
 from doc.pages import get_page_list
-from doc.props import get_comp_doc, get_prop_list, get_ref_map
+from doc.props import get_comp_doc, get_ref_map
 from doc.tokens import get_tok
 from domain import GenDoc
 
