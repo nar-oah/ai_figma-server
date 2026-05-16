@@ -61,7 +61,6 @@ class CompDoc:
     props: list[PropDoc]
     variants: list[VariantDoc]
     description: str = ""
-    meta: dict[str, object] = field(default_factory=dict)
 
 
 @dataclass(slots=True)
