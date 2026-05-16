@@ -22,16 +22,6 @@ uvicorn main:app --reload
 
 ## 接口
 
-### `GET /healthz`
-
-返回：
-
-```json
-{
-  "status": "ok"
-}
-```
-
 ### `POST /api/generate`
 
 请求体：
