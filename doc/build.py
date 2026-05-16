@@ -10,7 +10,19 @@ from doc.walk import get_walk
 from domain import GenDoc, PageDoc, RefDoc, TokDoc
 
 
-def mod_doc(file_doc: dict[str, Any]) -> GenDoc:
+def mod_doc(file_doc: dict[str, Any], token_doc: dict[str, Any] | None = None) -> GenDoc:
+    tok = get_tok(file_doc, token_doc)
+    comp_nodes = get_comp_node_list()
+    prop_by_tag = get_prop_by_tag(comp_nodes)
+    ref_map = get_ref_map(comp_nodes, prop_by_tag)
+    return GenDoc(
+        key=str(file_doc.get("version", "")),
+        name=str(file_doc.get("name", "Figma")),
+        tokens=tok,
+        comps=[get_comp_doc(file_doc, node, tok, ref_map, prop_by_tag) for node in comp_nodes],
+        pages=get_page_list(tok, ref_map),
+    )
+
     def get_comp_node_list() -> list[dict[str, Any]]:
         return [
             node
@@ -30,38 +42,32 @@ def mod_doc(file_doc: dict[str, Any]) -> GenDoc:
         for canvas in file_doc.get("document", {}).get("children", []):
             if not isinstance(canvas, dict) or canvas.get("type") != "CANVAS":
                 continue
-            if any(
-                child.get("type") == "COMPONENT_SET"
-                for child in canvas.get("children", [])
-                if isinstance(child, dict)
-            ):
+            if get_has_component_set(canvas):
                 continue
             for child in canvas.get("children", []):
-                if not isinstance(child, dict):
-                    continue
-                route = get_route(
-                    str(child.get("name", "page")), str(child.get("id", "")), used
-                )
-                out.append(
-                    PageDoc(
-                        name=str(child.get("name", "Page")),
-                        route=route,
-                        root=mod_node(child, tok, ref_map, {}, None),
-                    )
-                )
+                if isinstance(child, dict):
+                    out.append(get_page_doc(child, tok, ref_map, used))
         return out
 
-    tok = get_tok(file_doc)
-    comp_nodes = get_comp_node_list()
-    prop_by_tag = get_prop_by_tag(comp_nodes)
-    ref_map = get_ref_map(comp_nodes, prop_by_tag)
-    return GenDoc(
-        key=str(file_doc.get("version", "")),
-        name=str(file_doc.get("name", "Figma")),
-        tokens=tok,
-        comps=[get_comp_doc(node, tok, ref_map, prop_by_tag) for node in comp_nodes],
-        pages=get_page_list(tok, ref_map),
-    )
+    def get_has_component_set(canvas: dict[str, Any]) -> bool:
+        return any(
+            child.get("type") == "COMPONENT_SET"
+            for child in canvas.get("children", [])
+            if isinstance(child, dict)
+        )
+
+    def get_page_doc(
+        child: dict[str, Any],
+        tok: TokDoc,
+        ref_map: dict[str, RefDoc],
+        used: set[str],
+    ) -> PageDoc:
+        route = get_route(str(child.get("name", "page")), str(child.get("id", "")), used)
+        return PageDoc(
+            name=str(child.get("name", "Page")),
+            route=route,
+            root=mod_node(child, tok, ref_map, {}, None),
+        )
 
 
 def get_doc_data(doc: GenDoc) -> dict[str, object]:
@@ -79,10 +85,14 @@ def add_doc_json(doc: GenDoc, path: Path) -> None:
 if __name__ == "__main__":
 
     def get_sample() -> dict[str, object]:
-        path = Path(__file__).resolve().parents[1] / "output" / "api_response.json"
+        path = Path(__file__).resolve().parents[1] / "output" / "samples" / "api_response.json"
         return json.loads(path.read_text(encoding="utf-8"))
 
-    doc = mod_doc(get_sample())
-    path = Path("output/runs/sample/doc.json")
+    def get_sample_tokens() -> dict[str, object]:
+        path = Path(__file__).resolve().parents[1] / "Mode 1.tokens.json"
+        return json.loads(path.read_text(encoding="utf-8"))
+
+    doc = mod_doc(get_sample(), get_sample_tokens())
+    path = Path("output/doc.json")
     add_doc_json(doc, path)
     print(path)
