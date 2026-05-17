@@ -28,6 +28,7 @@ def add_doc_json(doc: GenDoc, path: Path) -> None:
 
 def get_comps(file_doc: dict[str, Any], refs: TokRefs) -> dict[str, CompDoc]:
     out: dict[str, CompDoc] = {}
+    comp_refs = get_ref_map(file_doc)
     for node in walk(file_doc.get("document", {})):
         if node.get("type") != "COMPONENT_SET":
             continue
@@ -36,7 +37,7 @@ def get_comps(file_doc: dict[str, Any], refs: TokRefs) -> dict[str, CompDoc]:
         out[name] = CompDoc(
             props=get_props(node),
             roots={
-                str(child.get("name", "")): [get_node(child, refs, prop_map, {})]
+                str(child.get("name", "")): [get_node(child, refs, prop_map, comp_refs)]
                 for child in node.get("children", [])
                 if isinstance(child, dict)
             },
