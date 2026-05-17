@@ -14,9 +14,7 @@ class Service:
         self.file = get_file(self.key, os.environ.get("FIGMA_TOKEN", ""))
 
     def handle_doc(self) -> GenDoc:
-        doc = mod_doc(self.file, self.token_doc)
-        doc.key = self.key
-        return doc
+        return mod_doc(self.file, self.token_doc)
 
 
 def get_key(url: str) -> str:
