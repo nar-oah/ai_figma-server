@@ -41,7 +41,7 @@ uvicorn main:app --reload
 }
 ```
 
-响应会返回文件 key、文件名和清洗后的 doc。`tokens` 对应 Figma 导出的类似 `Mode 1.tokens.json` 的 JSON 内容。
+响应直接返回清洗后的 doc。`tokens` 对应 Figma 导出的类似 `Mode 1.tokens.json` 的 JSON 内容。
 
 ## 输出结构
 
@@ -51,6 +51,7 @@ uvicorn main:app --reload
 output/
 ├── samples/
 │   └── api_response.json
+├── api_response.json     # only when running service.py
 └── doc.json              # only when running doc/build.py
 ```
 
@@ -63,17 +64,7 @@ output/
 ├── service.py
 ├── doc/
 │   ├── build.py
-│   ├── class_layout.py
-│   ├── class_style.py
-│   ├── classes.py
-│   ├── css.py
-│   ├── names.py
-│   ├── node.py
-│   ├── props.py
-│   ├── svg.py
-│   ├── tokens.py
-│   ├── vars.py
-│   └── walk.py
+│   └── tokens.py
 ├── output/
 │   └── samples/
 ```
@@ -99,5 +90,7 @@ python doc/build.py
 ```
 
 ## 语义约定
+
+`TokDoc` 保存全局颜色、字体、变量的名字和值。节点中的 `width`、`height`、`padding`、`color`、`font` 只引用这些名字，不写具体值。
 
 Figma API 能稳定给出布局、层级、样式、变量绑定、组件 props 和实例选项，但不能可靠推断业务语义。比如 `reverse` 是否只是反转颜色、某个 frame 应该是 `button` 还是 `input`，都不在当前清洗层处理。
