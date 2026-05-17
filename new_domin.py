@@ -1,5 +1,7 @@
 from dataclasses import dataclass, field
 
+type Nodes = list[TextNode | BoxNode | CompNode]
+
 
 @dataclass(slots=True)
 class FontDoc:
@@ -12,9 +14,9 @@ class FontDoc:
 
 @dataclass(slots=True)
 class TokDoc:
-    colors: dict[str, str] = field(default_factory=dict)
-    fonts: dict[str, FontDoc] = field(default_factory=dict)
-    variables: dict[str, int | float | str] = field(default_factory=dict)
+    colors: dict[str, str]
+    fonts: dict[str, FontDoc]
+    variables: dict[str, int]
 
 
 @dataclass(slots=True)
@@ -26,13 +28,8 @@ class TextNode:
 
 @dataclass(slots=True)
 class Flex:
-    direction: str = ""
-    justify: str = ""
-    align: str = ""
-    gap: str = ""
-
-
-Node = TextNode | "BoxNode" | "CompNode"
+    # TODO: 定义flex可能的参数
+    pass
 
 
 @dataclass(slots=True)
@@ -42,7 +39,7 @@ class BoxNode:
     flex: Flex
     padding: list[str]
     color: str
-    children: list[Node] = field(default_factory=list)
+    children: Nodes = field(default_factory=list)
 
 
 @dataclass(slots=True)
@@ -54,7 +51,7 @@ class CompNode:
 @dataclass(slots=True)
 class CompDoc:
     props: dict[str, str]
-    roots: dict[str, list[Node]]
+    roots: Nodes
     description: str = ""
 
 
@@ -62,4 +59,4 @@ class CompDoc:
 class GenDoc:
     tokens: TokDoc
     comps: dict[str, CompDoc]
-    pages: dict[str, list[Node]]
+    pages: Nodes
