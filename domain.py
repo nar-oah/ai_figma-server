@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 
 
@@ -32,7 +34,7 @@ class Flex:
     gap: str = ""
 
 
-Node = TextNode | "BoxNode" | "CompNode"
+type Node = TextNode | BoxNode | CompNode
 
 
 @dataclass(slots=True)
