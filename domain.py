@@ -42,6 +42,7 @@ class BoxNode:
     flex: Flex
     padding: list[str]
     color: str
+    radius: list[str] = field(default_factory=list)
     children: list[Node] = field(default_factory=list)
 
 

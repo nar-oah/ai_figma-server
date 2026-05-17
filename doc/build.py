@@ -86,6 +86,7 @@ def get_node(
         flex=get_flex(node, refs),
         padding=get_padding(node, refs),
         color=get_color(node, refs),
+        radius=get_radius(node, refs),
         children=[
             get_node(child, refs, prop_map, comp_refs)
             for child in node.get("children", [])
@@ -165,6 +166,24 @@ def get_padding(node: dict[str, Any], refs: TokRefs) -> list[str]:
     return [refs.var.get(var_refs.get(key, ""), "") for key in ["paddingTop", "paddingRight", "paddingBottom", "paddingLeft"]]
 
 
+def get_radius(node: dict[str, Any], refs: TokRefs) -> list[str]:
+    if node.get("type") == "ELLIPSE":
+        return ["full", "full", "full", "full"]
+    var_refs = get_ref_flat(node.get("boundVariables", {}))
+    ref = var_refs.get("cornerRadius")
+    if ref and ref in refs.var:
+        return [refs.var[ref]] * 4
+    vals = node.get("rectangleCornerRadii")
+    if isinstance(vals, list) and vals:
+        names = [refs.var.get(var_refs.get(f"rectangleCornerRadii.{idx}", ""), "") for idx in range(len(vals))]
+        if any(names):
+            return (names + ["", "", "", ""])[:4]
+        text = [get_num(val) for val in vals]
+        return (text + ["", "", "", ""])[:4]
+    val = get_num(node.get("cornerRadius"))
+    return [val, val, val, val] if val else ["", "", "", ""]
+
+
 def get_flex(node: dict[str, Any], refs: TokRefs) -> Flex:
     var_refs = get_ref_flat(node.get("boundVariables", {}))
     return Flex(
@@ -184,6 +203,12 @@ def get_ref_flat(data: Any, prefix: str = "") -> dict[str, str]:
         for key, val in data.items():
             out.update(get_ref_flat(val, f"{prefix}.{key}" if prefix else str(key)))
     return out
+
+
+def get_num(val: Any) -> str:
+    if not isinstance(val, (int, float)):
+        return ""
+    return str(int(val) if float(val).is_integer() else val)
 
 
 def walk(node: dict[str, Any]) -> list[dict[str, Any]]:
