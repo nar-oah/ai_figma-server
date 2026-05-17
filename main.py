@@ -1,7 +1,7 @@
 from typing import Any
 from fastapi import FastAPI
 from pydantic import BaseModel
-from doc.build import get_doc_data
+from domain import GenDoc
 from service import Service
 
 app = FastAPI(title="Figma Doc")
@@ -12,9 +12,9 @@ class GenerateRequest(BaseModel):
     tokens: dict[str, Any] | None = None
 
 
-@app.post("/api/doc", response_model=dict[str, Any])
-def get_doc(req: GenerateRequest) -> dict[str, Any]:
-    return get_doc_data(Service(req.url, req.tokens).handle_doc())
+@app.post("/api/doc", response_model=GenDoc)
+def get_doc(req: GenerateRequest) -> GenDoc:
+    return Service(req.url, req.tokens).handle_doc()
 
 
 if __name__ == "__main__":
