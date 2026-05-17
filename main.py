@@ -14,12 +14,7 @@ class GenerateRequest(BaseModel):
 
 @app.post("/api/doc", response_model=dict[str, Any])
 def get_doc(req: GenerateRequest) -> dict[str, Any]:
-    doc = Service(req.url, req.tokens).handle_doc()
-    return {
-        "name": doc.name,
-        "key": doc.key,
-        "doc": get_doc_data(doc),
-    }
+    return get_doc_data(Service(req.url, req.tokens).handle_doc())
 
 
 if __name__ == "__main__":
