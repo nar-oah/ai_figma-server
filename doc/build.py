@@ -1,12 +1,7 @@
 import json
-import sys
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any
-
-if __name__ == "__main__" and __package__ is None:
-    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-
 from doc.tokens import TokRefs, get_tok
 from domain import BoxNode, CompDoc, CompNode, Flex, GenDoc, TextNode
 

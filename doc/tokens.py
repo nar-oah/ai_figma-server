@@ -25,7 +25,7 @@ def add_vars(tok: TokDoc, refs: TokRefs, data: Any, path: list[str]) -> None:
         return
     if "$value" in data:
         name = "-".join(path)
-        tok.variables[name] = data.get("$value")
+        tok.variables[name] = data.get("$value",0)
         ext = data.get("$extensions", {})
         ref = ext.get("com.figma.variableId") if isinstance(ext, dict) else None
         if ref:

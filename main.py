@@ -1,20 +1,15 @@
-from typing import Any
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import FastAPI, File, UploadFile
 from domain import GenDoc
 from service import Service
+from json import loads
 
 app = FastAPI(title="Figma Doc")
 
 
-class GenerateRequest(BaseModel):
-    url: str
-    tokens: dict[str, Any] | None = None
-
-
 @app.post("/api/doc", response_model=GenDoc)
-def get_doc(req: GenerateRequest) -> GenDoc:
-    return Service(req.url, req.tokens).handle_doc()
+async def get_doc(url: str, file: UploadFile = File(...)) -> GenDoc:
+    tokens = await file.read()
+    return Service(url, loads(tokens)).get_doc()
 
 
 if __name__ == "__main__":
