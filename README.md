@@ -1,6 +1,6 @@
 # figma-doc
 
-FastAPI 服务。输入 Figma 链接和导出的 token JSON，读取环境变量 `FIGMA_TOKEN` 拉取文件数据，并清洗成内部 `GenDoc` 数据。
+FastAPI 服务。输入 Figma 链接和导出的 token JSON，读取环境变量 `FIGMA_TOKEN` 拉取文件数据，清洗成内部 `GenDoc` 数据后写入 PostgreSQL，并返回用于定位数据的 token。
 
 ## 运行
 
@@ -9,6 +9,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 export FIGMA_TOKEN="<figma_token>"
+export PGDATABASE="figma"
 python main.py
 ```
 
@@ -41,7 +42,9 @@ uvicorn main:app --reload
 }
 ```
 
-响应直接返回清洗后的 doc。`tokens` 对应 Figma 导出的类似 `Mode 1.tokens.json` 的 JSON 内容。
+响应只返回生成的定位 token。`tokens` 对应 Figma 导出的类似 `Mode 1.tokens.json` 的 JSON 内容。数据库连接使用 `psycopg.connect()` 无参数读取 `PGHOST`、`PGPORT`、`PGDATABASE`、`PGUSER`、`PGPASSWORD` 等环境变量。
+
+建表 SQL 位于 `schema.sql`，需要在 `figma` 数据库中先执行。
 
 ## 输出结构
 
