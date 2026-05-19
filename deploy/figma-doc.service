@@ -1,0 +1,19 @@
+[Unit]
+Description=Figma Doc FastAPI service
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=admin
+Group=admin
+WorkingDirectory=/home/admin/figma
+EnvironmentFile=/home/admin/figma/.env
+ExecStart=/home/admin/figma/.venv/bin/python /home/admin/figma/main.py
+Restart=always
+RestartSec=5
+KillSignal=SIGINT
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target
