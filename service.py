@@ -2,7 +2,6 @@ import os
 import re
 from pathlib import Path
 from doc.build import mod_doc
-from domain import GenDoc
 from store import add_doc
 import httpx
 
@@ -23,11 +22,9 @@ class Service:
         self.token_doc = token_doc
         self.file = get_file(self.key, os.environ.get("FIGMA_TOKEN", ""))
 
-    def get_doc(self) -> GenDoc:
-        return mod_doc(self.file, self.token_doc)
-
     def add_doc(self) -> str:
-        return add_doc(self.get_doc(), self.key)
+        doc = mod_doc(self.file, self.token_doc)
+        return add_doc(doc, self.key)
 
 
 if __name__ == "__main__":
