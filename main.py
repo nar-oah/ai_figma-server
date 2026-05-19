@@ -1,15 +1,14 @@
 from fastapi import FastAPI, File, UploadFile
-from domain import GenDoc
 from service import Service
 from json import loads
 
 app = FastAPI(title="Figma Doc")
 
 
-@app.post("/api/doc", response_model=GenDoc)
-async def get_doc(url: str, file: UploadFile = File(...)) -> GenDoc:
+@app.post("/api/doc", response_model=str)
+async def add_doc(url: str, file: UploadFile = File(...)) -> str:
     tokens = await file.read()
-    return Service(url, loads(tokens)).get_doc()
+    return Service(url, loads(tokens)).add_doc()
 
 
 if __name__ == "__main__":

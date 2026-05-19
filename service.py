@@ -3,6 +3,7 @@ import re
 from pathlib import Path
 from doc.build import mod_doc
 from domain import GenDoc
+from store import add_doc
 import httpx
 
 
@@ -24,6 +25,9 @@ class Service:
 
     def get_doc(self) -> GenDoc:
         return mod_doc(self.file, self.token_doc)
+
+    def add_doc(self) -> str:
+        return add_doc(self.get_doc(), self.key)
 
 
 if __name__ == "__main__":
