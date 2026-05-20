@@ -19,7 +19,7 @@ python main.py
 uvicorn main:app --reload
 ```
 
-默认监听 `127.0.0.1:8000`。可以通过 `HOST` 和 `PORT` 环境变量覆盖。
+`python main.py` 默认监听 `0.0.0.0:8000`，`uvicorn main:app --reload` 默认监听 `127.0.0.1:8000`。需要修改地址或端口时，在 `uvicorn` 命令中显式传入 `--host` 和 `--port`。
 
 ## 服务器部署
 
