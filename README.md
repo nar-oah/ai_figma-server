@@ -23,14 +23,14 @@ uvicorn main:app --reload
 
 ## 服务器部署
 
-以下步骤按仓库内的 `deploy/figma-doc.service` 约定部署，默认项目目录为 `/home/admin/figma`，运行用户为 `admin`，服务端口为 `8000`。如果服务器路径或用户不同，需要同步修改 service 文件中的 `User`、`Group`、`WorkingDirectory`、`EnvironmentFile` 和 `ExecStart`。
+以下步骤按仓库内的 `deploy/figma-doc.service` 约定部署，默认项目目录为 `/home/admin/ai_figma-server`，运行用户为 `admin`，服务端口为 `8000`。如果服务器路径或用户不同，需要同步修改 service 文件中的 `User`、`Group`、`WorkingDirectory`、`EnvironmentFile` 和 `ExecStart`。
 
 ### 1. 准备运行环境
 
-服务器需要 Python 3.12+ 和 PostgreSQL。将代码放到 `/home/admin/figma` 后安装依赖：
+服务器需要 Python 3.12+ 和 PostgreSQL。将代码放到 `/home/admin/ai_figma-server` 后安装依赖：
 
 ```bash
-cd /home/admin/figma
+cd /home/admin/ai_figma-server
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -42,14 +42,14 @@ pip install -r requirements.txt
 
 ```bash
 sudo -u postgres createdb figma
-sudo -u postgres psql -d figma -f /home/admin/figma/deploy/schema.sql
+sudo -u postgres psql -d figma -f /home/admin/ai_figma-server/deploy/schema.sql
 ```
 
 如果使用独立数据库账号，需要先创建账号并授予 `figma` 数据库权限，再在 `.env` 中写入对应连接信息。
 
 ### 3. 配置环境变量
 
-在 `/home/admin/figma/.env` 写入：
+在 `/home/admin/ai_figma-server/.env` 写入：
 
 ```bash
 FIGMA_TOKEN=<figma_token>
@@ -65,7 +65,7 @@ PGPASSWORD=<db_password>
 ### 4. 安装 systemd 服务
 
 ```bash
-sudo cp /home/admin/figma/deploy/figma-doc.service /etc/systemd/system/figma-doc.service
+sudo cp /home/admin/ai_figma-server/deploy/figma-doc.service /etc/systemd/system/figma-doc.service
 sudo systemctl daemon-reload
 sudo systemctl enable --now figma-doc
 sudo systemctl status figma-doc
