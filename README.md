@@ -42,20 +42,19 @@ uvicorn main:app --reload
 }
 ```
 
-响应只返回生成的定位 token。`tokens` 对应 Figma 导出的类似 `Mode 1.tokens.json` 的 JSON 内容。数据库连接使用 `psycopg.connect()` 无参数读取 `PGHOST`、`PGPORT`、`PGDATABASE`、`PGUSER`、`PGPASSWORD` 等环境变量。
+响应只返回生成的定位 token。`tokens` 对应 Figma 导出的类似 `tokens.json` 的 JSON 内容。数据库连接使用 `psycopg.connect()` 无参数读取 `PGHOST`、`PGPORT`、`PGDATABASE`、`PGUSER`、`PGPASSWORD` 等环境变量。
 
 建表 SQL 位于 `schema.sql`，需要在 `figma` 数据库中先执行。
 
 ## 输出结构
 
-正式接口不写文件。`output/samples/api_response.json` 是本地样例输入，`python doc/build.py` 会写排查用 `output/doc.json`。
+正式接口不写文件。`output/api_response.json` 是本地样例输入，`python doc/build.py` 会写排查用 `output/doc.json`。
 
 ```text
 output/
-├── samples/
-│   └── api_response.json
 ├── api_response.json     # only when running service.py
-└── doc.json              # only when running doc/build.py
+├── doc.json              # only when running doc/build.py
+└── token.json              # only when running doc/build.py
 ```
 
 ## 代码结构
@@ -69,7 +68,6 @@ output/
 │   ├── build.py
 │   └── tokens.py
 ├── output/
-│   └── samples/
 ```
 
 ## 模块运行
