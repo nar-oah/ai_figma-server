@@ -3,11 +3,11 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 from doc.tokens import TokRefs, get_tok
-from domain import BoxNode, CompDoc, CompNode, Flex, GenDoc, TextNode
+from domain import BoxNode, CompDoc, CompNode, Flex, GenDoc, TextNode, Token
 
 
 def mod_doc(
-    file_doc: dict[str, Any], token_doc: dict[str, Any] | None = None
+    file_doc: dict[str, Any], token_doc: dict[str, Token] | None = None
 ) -> GenDoc:
     tokens, refs = get_tok(file_doc, token_doc)
     comps = get_comps(file_doc, refs)

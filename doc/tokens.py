@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Any
-from domain import FontDoc, TokDoc
+from domain import FontDoc, TokDoc, Token, Ext
 
 
 @dataclass(slots=True)
@@ -10,30 +10,31 @@ class TokRefs:
     var: dict[str, str] = field(default_factory=dict)
 
 
-def get_tok(file_doc: dict[str, Any], token_doc: dict[str, Any] | None) -> tuple[TokDoc, TokRefs]:
+def get_tok(
+    file_doc: dict[str, Any], token_doc: dict[str, Token] | None
+) -> tuple[TokDoc, TokRefs]:
     tok = TokDoc()
     refs = TokRefs()
-    add_vars(tok, refs, token_doc, [])
+    if isinstance(token_doc, dict):
+        add_vars(tok, refs, token_doc)
     for node in walk(file_doc.get("document", {})):
         add_color(tok, refs, node, file_doc.get("styles", {}))
         add_font(tok, refs, node, file_doc.get("styles", {}))
     return tok, refs
 
 
-def add_vars(tok: TokDoc, refs: TokRefs, data: Any, path: list[str]) -> None:
-    if not isinstance(data, dict):
-        return
-    if "$value" in data:
-        name = "-".join(path)
-        tok.variables[name] = data.get("$value",0)
-        ext = data.get("$extensions", {})
-        ref = ext.get("com.figma.variableId") if isinstance(ext, dict) else None
-        if ref:
+def add_vars(tok: TokDoc, refs: TokRefs, tokens: dict[str, Token]) -> None:
+    def add_toc(name: str, token: Token) -> Ext:
+        if isinstance(val := token.get("$value"), int):
+            tok.variables[name] = val
+        return ext if isinstance(ext := token.get("$extensions"), dict) else {}
+
+    def add_refs(name: str, ext: Ext) -> None:
+        if isinstance(ref := ext.get("com.figma.variableId"), str):
             refs.var[str(ref)] = name
-        return
-    for key, val in data.items():
-        if not str(key).startswith("$"):
-            add_vars(tok, refs, val, path + [str(key)])
+
+    for name, token in tokens.items():
+        add_refs(name, add_toc(name, token))
 
 
 def add_color(
@@ -83,14 +84,20 @@ def get_style_name(styles: dict[str, Any], ref: str) -> str:
 def get_node_color(node: dict[str, Any], style_key: str) -> str:
     if style_key == "stroke":
         return get_color(get_paint(node.get("strokes", [])))
-    return get_color(get_paint(node.get("fills", []))) or get_color(node.get("backgroundColor"))
+    return get_color(get_paint(node.get("fills", []))) or get_color(
+        node.get("backgroundColor")
+    )
 
 
 def get_paint(data: Any) -> dict[str, Any] | None:
     if not isinstance(data, list):
         return None
     for item in data:
-        if isinstance(item, dict) and item.get("visible") is not False and item.get("type") == "SOLID":
+        if (
+            isinstance(item, dict)
+            and item.get("visible") is not False
+            and item.get("type") == "SOLID"
+        ):
             return item.get("color")
     return None
 

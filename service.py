@@ -2,12 +2,13 @@ import os
 import re
 from pathlib import Path
 from doc.build import mod_doc
+from domain import Token
 from store import add_doc
 import httpx
 
 
 class Service:
-    def __init__(self, url: str, token_doc: dict[str, object] | None = None) -> None:
+    def __init__(self, url: str, token_doc: dict[str, Token] | None = None) -> None:
         def get_key(url: str) -> str:
             hit = re.search(r"figma\.com/(?:file|design|proto|board)/([^/?#]+)", url)
             return hit.group(1) if hit else ""

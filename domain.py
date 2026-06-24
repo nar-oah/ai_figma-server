@@ -1,5 +1,9 @@
 from dataclasses import dataclass, field
 
+type Ext = dict[str, str | list[str]]
+type Token = dict[str, str | int | Ext]
+type Node = TextNode | BoxNode | CompNode
+
 
 @dataclass(slots=True)
 class FontDoc:
@@ -14,7 +18,7 @@ class FontDoc:
 class TokDoc:
     colors: dict[str, str] = field(default_factory=dict)
     fonts: dict[str, FontDoc] = field(default_factory=dict)
-    variables: dict[str, int | float | str] = field(default_factory=dict)
+    variables: dict[str, int] = field(default_factory=dict)
 
 
 @dataclass(slots=True)
@@ -30,9 +34,6 @@ class Flex:
     justify: str = ""
     align: str = ""
     gap: str = ""
-
-
-type Node = TextNode | BoxNode | CompNode
 
 
 @dataclass(slots=True)
